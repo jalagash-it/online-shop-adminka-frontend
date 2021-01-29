@@ -17,16 +17,15 @@ export default {
     css: [],
 
     // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
-    plugins: [],
+    plugins: [
+        '~/plugins/axios'
+    ],
 
     // Auto import components (https://go.nuxtjs.dev/config-components)
     components: true,
 
     // Modules for dev and build (recommended) (https://go.nuxtjs.dev/config-modules)
-    buildModules: [
-        // https://go.nuxtjs.dev/eslint
-        '@nuxtjs/eslint-module',
-    ],
+    buildModules: [],
 
     // Modules (https://go.nuxtjs.dev/config-modules)
     modules: [
@@ -51,18 +50,6 @@ export default {
     // },
 
     // Build Configuration (https://go.nuxtjs.dev/config-build)
-    build: {
-        extend(config, ctx) {
-            config.module.rules.push({
-                enforce: 'pre',
-                test: /\.(js|vue)$/,
-                loader: 'eslint-loader',
-                exclude: /(node_modules)/,
-                options: {
-                    fix: true
-                }
-            })
-        }
-    },
+    build: {},
 
 }

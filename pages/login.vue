@@ -53,8 +53,13 @@ export default {
   methods: {
     onSubmit(evt) {
       evt.preventDefault()
-      console.log(this.user)
-      this.$axios.$get('/').then((res) => console.log(res))
+      this.$axios.$post('/login', this.user).then(function () {
+        this.$bvToast.toast('Success', {
+          title: `you are logged in`,
+          variant: 'success',
+          solid: true,
+        })
+      })
     },
   },
 }
