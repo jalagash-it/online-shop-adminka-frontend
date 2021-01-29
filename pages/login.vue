@@ -5,25 +5,25 @@
 
       <!-- Icon -->
       <div class="fadeIn first">
-        <img
-          src="http://danielzawadzki.com/codepen/01/icon.svg"
-          id="icon"
-          alt="User Icon"
-        />
+        <div class="h2 mb-0">
+          <b-icon-person-circle class="avatar"></b-icon-person-circle>
+        </div>
       </div>
 
       <!-- Login Form -->
-      <form>
+      <form @submit="onSubmit">
         <input
-          type="text"
           id="login"
+          v-model="user.email"
+          type="text"
           class="fadeIn second"
           name="login"
           placeholder="login"
         />
         <input
-          type="text"
           id="password"
+          v-model="user.password"
+          type="text"
           class="fadeIn third"
           name="login"
           placeholder="password"
@@ -39,6 +39,27 @@
   </div>
 </template>
 
+<script>
+import { BIconPersonCircle } from 'bootstrap-vue'
+export default {
+  components: {
+    BIconPersonCircle,
+  },
+  data() {
+    return {
+      user: { email: '', password: '' },
+    }
+  },
+  methods: {
+    onSubmit(evt) {
+      evt.preventDefault()
+      console.log(this.user)
+      this.$axios.$get('/').then((res) => console.log(res))
+    },
+  },
+}
+</script>
+
 <style scoped>
 /* BASIC */
 
@@ -49,6 +70,9 @@ html {
 body {
   font-family: 'Poppins', sans-serif;
   height: 100vh;
+}
+.avatar {
+  margin: 50px;
 }
 
 a {
