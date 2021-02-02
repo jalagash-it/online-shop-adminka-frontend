@@ -26,7 +26,28 @@
 </template>
 
 <script>
-export default {}
+export default {
+  async asyncData() {
+    const self = this;
+    new Promise(function (resolve, reject) {
+      const token = localStorage.getItem("api-token");
+      if (!token) {
+        commit("setUser", null);
+        reject(null);
+      }
+      self.$axios
+        .post("/auth/current")
+        .then((res) => {
+          const user = res.data;
+          commit("setUser", user);
+          resolve(user);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  },
+};
 </script>
 
 <style>
@@ -40,8 +61,8 @@ export default {}
 }
 
 .title {
-  font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: "Quicksand", "Source Sans Pro", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   display: block;
   font-weight: 300;
   font-size: 100px;

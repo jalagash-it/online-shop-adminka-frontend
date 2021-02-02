@@ -32,7 +32,7 @@
       </form>
 
       <!-- Remind Passowrd -->
-      <div id="formFooter">
+      <div id="formFooter" hidden>
         <a class="underlineHover" href="#">Forgot Password?</a>
       </div>
     </div>
@@ -40,29 +40,33 @@
 </template>
 
 <script>
-import { BIconPersonCircle } from 'bootstrap-vue'
+import { BIconPersonCircle } from "bootstrap-vue";
 export default {
   components: {
     BIconPersonCircle,
   },
   data() {
     return {
-      user: { email: '', password: '' },
-    }
+      user: { email: "admin@admin.kz", password: "1" },
+    };
   },
   methods: {
     onSubmit(evt) {
-      evt.preventDefault()
-      this.$axios.$post('/login', this.user).then(function () {
-        this.$bvToast.toast('Success', {
+      evt.preventDefault();
+      const self = this;
+      this.$axios.$post("/auth/login", this.user).then(function (token) {
+        localStorage.setItem("api-token", token);
+        self.$bvToast.toast("Success", {
           title: `you are logged in`,
-          variant: 'success',
+          variant: "success",
           solid: true,
-        })
-      })
+        });
+        self.$store.commit("auth/setUser", { email: self.user.email });
+        self.$router.replace("/");
+      });
     },
   },
-}
+};
 </script>
 
 <style scoped>
@@ -73,7 +77,7 @@ html {
 }
 
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   height: 100vh;
 }
 .avatar {
@@ -145,9 +149,9 @@ h2.active {
 
 /* FORM TYPOGRAPHY*/
 
-input[type='button'],
-input[type='submit'],
-input[type='reset'] {
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
   background-color: #56baed;
   border: none;
   color: white;
@@ -169,15 +173,15 @@ input[type='reset'] {
   transition: all 0.3s ease-in-out;
 }
 
-input[type='button']:hover,
-input[type='submit']:hover,
-input[type='reset']:hover {
+input[type="button"]:hover,
+input[type="submit"]:hover,
+input[type="reset"]:hover {
   background-color: #39ace7;
 }
 
-input[type='button']:active,
-input[type='submit']:active,
-input[type='reset']:active {
+input[type="button"]:active,
+input[type="submit"]:active,
+input[type="reset"]:active {
   -moz-transform: scale(0.95);
   -webkit-transform: scale(0.95);
   -o-transform: scale(0.95);
@@ -185,7 +189,7 @@ input[type='reset']:active {
   transform: scale(0.95);
 }
 
-input[type='text'] {
+input[type="text"] {
   background-color: #f6f6f6;
   border: none;
   color: #0d0d0d;
@@ -206,12 +210,12 @@ input[type='text'] {
   border-radius: 5px 5px 5px 5px;
 }
 
-input[type='text']:focus {
+input[type="text"]:focus {
   background-color: #fff;
   border-bottom: 2px solid #5fbae9;
 }
 
-input[type='text']:placeholder {
+input[type="text"]:placeholder {
   color: #cccccc;
 }
 
@@ -326,7 +330,7 @@ input[type='text']:placeholder {
   width: 0;
   height: 2px;
   background-color: #56baed;
-  content: '';
+  content: "";
   transition: width 0.2s;
 }
 
