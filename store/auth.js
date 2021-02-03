@@ -13,22 +13,20 @@ export const mutations = {
 export const actions = {
     current({ commit }) {
         const self = this;
-        return new Promise(function(resolve, reject) {
-            const token = localStorage.getItem('api-token')
-            if (!token) {
-                commit('setUser', null)
-                reject(null)
-            }
-            self.$axios.post('/auth/current')
-                .then((res) => {
-                    const user = res.data
-                    commit('setUser', user)
-                    resolve(user)
-                })
-                .catch((err) => {
-                    reject(err);
-                })
-        })
+        const token = localStorage.getItem('api-token')
+        if (!token) {
+            commit('setUser', null)
+            this.$router.replace('/login')
+        }
+        return self.$axios.post('/auth/current')
+            .then((res) => {
+                const user = res.data
+                commit('setUser', user)
+                return user;
+            }).catch(() => {
+                this.$router.replace('/login')
+            })
+
     },
 
 }

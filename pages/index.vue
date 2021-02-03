@@ -27,25 +27,8 @@
 
 <script>
 export default {
-  async asyncData() {
-    const self = this;
-    new Promise(function (resolve, reject) {
-      const token = localStorage.getItem("api-token");
-      if (!token) {
-        commit("setUser", null);
-        reject(null);
-      }
-      self.$axios
-        .post("/auth/current")
-        .then((res) => {
-          const user = res.data;
-          commit("setUser", user);
-          resolve(user);
-        })
-        .catch((err) => {
-          reject(err);
-        });
-    });
+  async asyncData({ store }) {
+    store.dispatch("auth/current");
   },
 };
 </script>
