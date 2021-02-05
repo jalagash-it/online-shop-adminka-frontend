@@ -1,55 +1,65 @@
 <template>
-  <div>
-    <Nuxt />
-  </div>
+  <b-container fluid>
+    <b-navbar toggleable="lg" type="dark" variant="info">
+      <b-navbar-brand href="#">e-shop</b-navbar-brand>
+
+      <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+
+      <b-collapse id="nav-collapse" is-nav>
+        <b-navbar-nav>
+          <b-nav-item to="/categories">Категория</b-nav-item>
+        </b-navbar-nav>
+
+        <!-- Right aligned nav items -->
+        <b-navbar-nav class="ml-auto">
+          <b-nav-form>
+            <b-form-input size="sm" class="mr-sm-2" placeholder="Іздеу">
+            </b-form-input>
+            <b-button size="sm" class="my-2 my-sm-0" type="submit">
+              Іздеу
+            </b-button>
+          </b-nav-form>
+
+          <b-nav-item-dropdown right v-if="user">
+            <template #button-content>
+              <em>{{ user.email }}</em>
+            </template>
+            <b-dropdown-item href="#">Профиль</b-dropdown-item>
+            <b-dropdown-item href="#" @click="logout">Шығу</b-dropdown-item>
+          </b-nav-item-dropdown>
+
+          <b-nav-item-dropdown right v-else>
+            <template #button-content>
+              <em>Қонақ</em>
+            </template>
+            <b-dropdown-item to="/login">Кіру</b-dropdown-item>
+          </b-nav-item-dropdown>
+        </b-navbar-nav>
+      </b-collapse>
+    </b-navbar>
+    <main>
+      <Nuxt />
+    </main>
+  </b-container>
 </template>
 
-<style>
-html {
-  font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Roboto, 'Helvetica Neue', Arial, sans-serif;
-  font-size: 16px;
-  word-spacing: 1px;
-  -ms-text-size-adjust: 100%;
-  -webkit-text-size-adjust: 100%;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
-  box-sizing: border-box;
-}
+<script>
+export default {
+  computed: {
+    user() {
+      return this.$store.state.auth.user;
+    },
+  },
+  methods:{
+    logout(){
+      this.$store.dispatch('auth/logout');
+    }
+  }
+};
+</script>
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-}
-
-.button--green {
-  display: inline-block;
-  border-radius: 4px;
-  border: 1px solid #3b8070;
-  color: #3b8070;
-  text-decoration: none;
-  padding: 10px 30px;
-}
-
-.button--green:hover {
-  color: #fff;
-  background-color: #3b8070;
-}
-
-.button--grey {
-  display: inline-block;
-  border-radius: 4px;
-  border: 1px solid #35495e;
-  color: #35495e;
-  text-decoration: none;
-  padding: 10px 30px;
-  margin-left: 15px;
-}
-
-.button--grey:hover {
-  color: #fff;
-  background-color: #35495e;
+<style scoped>
+main {
+  width: 100%;
 }
 </style>

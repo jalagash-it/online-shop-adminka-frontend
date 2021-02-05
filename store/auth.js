@@ -28,5 +28,11 @@ export const actions = {
             })
 
     },
-
+    logout({ commit }) {
+        this.$axios.post('/auth/logout').then(() => {
+            localStorage.removeItem('api-token');
+            commit('setUser', null);
+            this.$router.replace('/login');
+        })
+    }
 }
