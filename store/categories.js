@@ -1,11 +1,15 @@
+import { arrayToTree } from '../helpers/tree-helper'
 export const state = () => ({
-    list: null,
+    tree: null,
 })
 
 export const mutations = {
     set(state, arr) {
-        state.list = arr
+        state.tree = arrayToTree(arr)
     },
+    toggleExpand(state, node) {
+        node.isExpanded = !node.isExpanded;
+    }
 }
 export const actions = {
     all({ commit }) {

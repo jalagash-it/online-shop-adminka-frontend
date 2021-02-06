@@ -2,20 +2,24 @@
   <b-container>
     <b-row>
       <b-col v-if="categories">
-        {{ JSON.stringify(categories) }}
+        <Tree :data="categories" />
       </b-col>
     </b-row>
   </b-container>
 </template> 
 
 <script>
+import Tree from "~/components/Tree";
 export default {
+  components: {
+    Tree,
+  },
   data() {
     return {};
   },
   computed: {
     categories() {
-      return this.$store.state.categories.list;
+      return this.$store.state.categories.tree;
     },
   },
   mounted() {
