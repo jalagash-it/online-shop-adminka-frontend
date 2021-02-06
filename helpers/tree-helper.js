@@ -34,7 +34,7 @@ export const arrayToTree = (arr) => {
     return tree;
 }
 
-function Node(item) {
+export const Node = function(item) {
     this.node = item;
     this.children = [];
     this.parent = null;

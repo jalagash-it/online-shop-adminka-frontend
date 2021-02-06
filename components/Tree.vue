@@ -10,7 +10,7 @@
         {{ (data.node && data.node.name) || "--" }}
 
         <span class="node-actions">
-          <b-button size="sm" @click="addGroup(data.node)">
+          <b-button size="sm" @click="addGroup(data)">
             <b-icon icon="folder-plus"></b-icon>
           </b-button>
           <b-button size="sm" @click="editGroup(n)">
@@ -28,7 +28,7 @@
     <b-modal
       v-model="creatingGroupModal"
       v-if="creatingGroup != null"
-      @ok="saveGroup"
+      @ok="create"
     >
       <b-form-group label-size="sm" label="Название группы">
         <b-form-input size="sm" v-model="creatingGroup.name"></b-form-input>
@@ -63,6 +63,7 @@ export default {
       this.$store.commit("categories/toggleExpand", n);
     },
     addGroup(n) {
+      console.log(n);
       this.creatingGroup = {
         id: new Date().getTime(),
         name: "жаңа категория",
@@ -71,8 +72,8 @@ export default {
       };
       this.creatingGroupModal = true;
     },
-    saveGroup() {
-      this.$store.dispatch("categories/saveGroup", this.creatingGroup);
+    create() {
+      this.$store.dispatch("categories/create", this.creatingGroup);
     },
     editGroup(n) {
       this.editingGroup = n;
