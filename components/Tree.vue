@@ -13,10 +13,10 @@
           <b-button size="sm" @click="addGroup(data)">
             <b-icon icon="folder-plus"></b-icon>
           </b-button>
-          <b-button size="sm" @click="editGroup(n)">
+          <b-button size="sm" @click="editGroup(data.node)" v-if="data.node">
             <b-icon icon="pencil-square"></b-icon>
           </b-button>
-          <b-button size="sm" @click="removeGroup(n)">
+          <b-button size="sm" @click="removeGroup(data)" v-if="data.node">
             <b-icon icon="trash"></b-icon>
           </b-button>
         </span>
@@ -75,12 +75,13 @@ export default {
     create() {
       this.$store.dispatch("categories/create", this.creatingGroup);
     },
-    editGroup(n) {
-      this.editingGroup = n;
+    editGroup({ id, name, parent_id }) {
+      const obj = { id, name, parent_id };
+      this.editingGroup = obj;
       this.editingGroupModal = true;
     },
     updateGroup() {
-      this.$store.dispatch("categories/updateGroup", this.editingGroup);
+      this.$store.dispatch("categories/update", this.editingGroup);
     },
     removeGroup(n) {
       const confirmed = confirm(`Удалить "${data.name}" и все ее содержимое ?`);

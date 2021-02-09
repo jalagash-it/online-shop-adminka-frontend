@@ -1,4 +1,4 @@
-import { arrayToTree, Node } from '../helpers/tree-helper'
+import { arrayToTree, Node, search } from '../helpers/tree-helper'
 export const state = () => ({
     tree: null,
 })
@@ -15,7 +15,10 @@ export const mutations = {
             tree.children.push(child);
         else
             parent.children.push(child);
-
+    },
+    rename(state, { id, name }) {
+        const old = search(state.tree, n => n && n.id === id);
+        old.node.name = name;
     }
 }
 export const actions = {
@@ -26,11 +29,18 @@ export const actions = {
     create({ commit }, payload) {
         let parent = payload.parent;
         let name = payload.name;
-        this.$axios.post('/categories', { name }).then(res => {
+        this.$axios.post('/categories', { name, parent_id: (parent && parent.node && parent.node.id || null) }).then(res => {
             commit('addChild', { parent, child: new Node(res.data) });
         });
 
     },
-    update() {},
+    update({ commit }, payload) {
+        const id = payload.id;
+        const name = payload.name;
+        const parent_id = payload.parent_id;
+        return this.$axios.put(`/categories/${id}`, { id, name, parent_id }).then(() => {
+            commit('rename', { id, name, parent_id });
+        })
+    },
     delete() {}
 }
