@@ -13,12 +13,24 @@ export const mutations = {
     addChild(state, { parent, child }) {
         if (!parent)
             tree.children.push(child);
-        else
+        else {
+            child.parent = parent;
             parent.children.push(child);
+        }
     },
     rename(state, { id, name }) {
         const old = search(state.tree, n => n && n.id === id);
         old.node.name = name;
+    },
+    remove(state, n) {
+        if (n.parent) {
+            const idx = n.parent.children.indexOf(n);
+            n.parent.children.splice(idx, 1);
+        } else {
+            const idx = state.tree.children.indexOf(n);
+            if (idx >= 0)
+                state.tree.children.splice(idx, 1);
+        }
     }
 }
 export const actions = {
@@ -42,5 +54,10 @@ export const actions = {
             commit('rename', { id, name, parent_id });
         })
     },
-    delete() {}
+    remove({ commit }, payload) {
+        const data = payload;
+        return this.$axios.delete(`/categories/${data.node.id}`).then(() => {
+            commit('remove', data);
+        })
+    }
 }

@@ -25,8 +25,10 @@ export const arrayToTree = (arr) => {
         const node = new Node(item);
         if (item.parent_id > 0) {
             const exists = search(tree, n => n && n.id === item.parent_id);
-            exists.children.push(node);
-            node.parent = exists;
+            if (exists) {
+                exists.children.push(node);
+                node.parent = exists;
+            }
         } else if (item.parent_id === null) {
             tree.children.push(node);
         }

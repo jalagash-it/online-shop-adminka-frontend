@@ -83,11 +83,13 @@ export default {
     updateGroup() {
       this.$store.dispatch("categories/update", this.editingGroup);
     },
-    removeGroup(n) {
-      const confirmed = confirm(`Удалить "${data.name}" и все ее содержимое ?`);
-      if (!confirmed) return;
-      const idx = this.nodeArr.indexOf(n);
-      this.nodeArr.splice(idx, 1);
+    removeGroup(data) {
+      if (!data || !data.node) return;
+      const confirmed = confirm(
+        `Удалить "${data.node.name}" и все ее содержимое ?`
+      );
+      if (confirmed !== true) return;
+      this.$store.dispatch("categories/remove", data);
     },
   },
 };
