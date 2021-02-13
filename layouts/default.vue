@@ -8,6 +8,7 @@
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
           <b-nav-item to="/categories">Категория</b-nav-item>
+          <b-nav-item to="/products">Продукты</b-nav-item>
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->
@@ -50,11 +51,11 @@ export default {
       return this.$store.state.auth.user;
     },
   },
-  methods:{
-    logout(){
-      this.$store.dispatch('auth/logout');
-    }
-  }
+  methods: {
+    logout() {
+      this.$store.dispatch("auth/logout");
+    },
+  },
 };
 </script>
 
