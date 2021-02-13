@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2>Товары</h2>
-    <b-button v-b-modal.add-modal>+</b-button><br />
+    <b-button v-b-modal.add-modal style="margin-bottom: 8px">+</b-button>
     <b-table :fields="fields" :items="items"></b-table>
     <b-modal
       id="add-modal"
@@ -63,12 +63,14 @@ export default {
           sortable: true,
         },
       ],
-      items: [
-        { name: "product1", price: 200000 },
-        { name: "product1", price: 200000 },
-        { name: "product1", price: 200000 },
-      ],
+      items:[]
     };
+  },
+  mounted() {
+    const self = this;
+    this.$axios.$get("/products").then((res) => {
+      self.items = res;
+    });
   },
   methods: {
     checkFormValidity() {
