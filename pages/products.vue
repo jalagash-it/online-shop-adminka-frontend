@@ -2,7 +2,11 @@
   <div>
     <h2>Товары</h2>
     <b-button v-b-modal.add-modal style="margin-bottom: 8px">+</b-button>
-    <b-table :fields="fields" :items="items"></b-table>
+    <b-table :fields="fields" :items="items">
+      <template #cell(category_id)="data">
+        <b class="text-info">{{ getCategoryName(data.item.category_id) }}</b>
+      </template>
+    </b-table>
     <b-modal
       id="add-modal"
       title="Добавить новый товар"
@@ -12,18 +16,6 @@
       @ok="handleOk"
     >
       <form ref="form" @submit.stop.prevent="handleSubmit">
-        <!-- 
-        'name',
-        'category_id',
-        'price',
-        'covering',
-        'depth',
-        'width',
-        'height',
-        'wave_width',
-        'wave_height',
-        'guarantee'
-         -->
         <b-form-group
           label="Название"
           label-for="name-input"
@@ -43,23 +35,21 @@
           invalid-feedback="Обязательное поле"
           :state="catState"
         >
-          <b-form-input
-            id="category_id"
+          <b-form-select
             v-model="newItem.category_id"
-            :state="nameState"
-            required
-          ></b-form-input>
+            :options="categoryOptions"
+          ></b-form-select>
         </b-form-group>
         <b-form-group
           label="Цена"
           label-for="price-input"
           invalid-feedback="Обязательное поле"
-          :state="nameState"
+          :state="priceState"
         >
           <b-form-input
             id="price-input"
             v-model="newItem.price"
-            :state="nameState"
+            :state="priceState"
             required
           ></b-form-input>
         </b-form-group>
@@ -162,10 +152,34 @@
 </template>
 
 <script>
+import { treeToArray } from "../helpers/tree-helper";
+/**
+  
+        'name',
+        'category_id',
+        'price',
+        'covering',
+        'depth',
+        'width',
+        'height',
+        'wave_width',
+        'wave_height',
+        'guarantee'
+     
+  */
 export default {
   data() {
     return {
       nameState: null,
+      catState: null,
+      priceState: null,
+      coveringState: null,
+      depthState: null,
+      widthState: null,
+      heightState: null,
+      wave_widthState: null,
+      wave_heightState: null,
+      guaranteeState: null,
       showAddModal: false,
       newItem: { name: "", price: 0 },
       fields: [
@@ -223,7 +237,9 @@ export default {
     };
   },
   mounted() {
+    window["test"] = this;
     const self = this;
+    this.$store.dispatch("categories/all");
     this.$axios.$get("/products").then((res) => {
       self.items = res;
     });
@@ -257,6 +273,23 @@ export default {
             this.$bvModal.hide("add-modal");
           });
         });
+    },
+    getCategoryName(c_id) {
+      const cat = test.categoryOptions.find((c) => c.value == c_id);
+      return cat != null ? cat.text : "Нет категории";
+    },
+  },
+  computed: {
+    categories() {
+      return this.$store.state.categories.tree;
+    },
+    categoryOptions() {
+      const cats = this.$store.state.categories.tree;
+      return cats != null
+        ? treeToArray(cats).map((c) => {
+            return { value: c.id, text: c.name };
+          })
+        : [];
     },
   },
 };
