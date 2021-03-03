@@ -36,6 +36,23 @@ export const arrayToTree = (arr) => {
     return tree;
 }
 
+export const treeToArray = (node) => {
+    const arr = [];
+    if (node.node)
+        arr.push();
+    if (node.children.length > 0)
+        pushChild(node);
+
+    function pushChild(n) {
+        for (let ch of n.children) {
+            arr.push(ch.node);
+            if (ch.children.length > 0)
+                pushChild(ch);
+        }
+    }
+    return arr;
+}
+
 export const Node = function(item) {
     this.node = item;
     this.children = [];
