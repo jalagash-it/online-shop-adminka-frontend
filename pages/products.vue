@@ -2,10 +2,17 @@
   <div>
     <h2>Товары</h2>
     <b-button v-b-modal.add-modal style="margin-bottom: 8px">+</b-button>
-    <b-table :fields="fields" :items="items">
+    <b-table :fields="fields" :items="items" ref="prodTable">
       <template #cell(category_id)="data">
         <b class="text-info">{{ getCategoryName(data.item.category_id) }}</b>
       </template>
+
+      <template #cell(fields)="data">
+        <b v-for="(p, idx) in data.item.fields" :key="idx">
+          {{ p.key }}:{{ p.val }} |
+        </b>
+      </template>
+
       <template #cell(actions)="data">
         <b-button @click="updateProduct(data.item)" variant="outline-secondary">
           edit</b-button
@@ -45,119 +52,35 @@
             :options="categoryOptions"
           ></b-form-select>
         </b-form-group>
-        <b-form-group
-          label="Цена"
-          label-for="price-input"
-          invalid-feedback="Обязательное поле"
-          :state="priceState"
-        >
-          <b-form-input
-            id="price-input"
-            v-model="newItem.price"
-            :state="priceState"
-            type="number"
-            required
-          ></b-form-input>
-        </b-form-group>
-        <b-form-group
-          label="Покрытие"
-          label-for="covering"
-          invalid-feedback="Обязательное поле"
-          :state="coveringState"
-        >
-          <b-form-input
-            id="covering"
-            v-model="newItem.covering"
-            :state="coveringState"
-            required
-          ></b-form-input>
-        </b-form-group>
-
-        <b-form-group
-          label="Толщина"
-          label-for="depth"
-          invalid-feedback="Обязательное поле"
-          :state="depthState"
-        >
-          <b-form-input
-            id="depth"
-            v-model="newItem.depth"
-            :state="depthState"
-            type="number"
-            required
-          ></b-form-input>
-        </b-form-group>
-        <b-form-group
-          label="Ширина"
-          label-for="width"
-          invalid-feedback="Обязательное поле"
-          :state="widthState"
-        >
-          <b-form-input
-            id="width"
-            v-model="newItem.width"
-            :state="widthState"
-            type="number"
-            required
-          ></b-form-input>
-        </b-form-group>
-        <b-form-group
-          label="Длина"
-          label-for="height"
-          invalid-feedback="Обязательное поле"
-          :state="heightState"
-        >
-          <b-form-input
-            id="height"
-            v-model="newItem.height"
-            :state="heightState"
-            type="number"
-            required
-          ></b-form-input>
-        </b-form-group>
-        <b-form-group
-          label="Ширина волны"
-          label-for="wave_width"
-          invalid-feedback="Обязательное поле"
-          :state="wave_widthState"
-        >
-          <b-form-input
-            id="wave_width"
-            v-model="newItem.wave_width"
-            :state="wave_widthState"
-            type="number"
-            required
-          ></b-form-input>
-        </b-form-group>
-
-        <b-form-group
-          label="Высота волны"
-          label-for="wave_height"
-          invalid-feedback="Обязательное поле"
-          :state="wave_heightState"
-        >
-          <b-form-input
-            id="wave_height"
-            v-model="newItem.wave_height"
-            :state="wave_heightState"
-            type="number"
-            required
-          ></b-form-input>
-        </b-form-group>
-        <b-form-group
-          label="Гарантие"
-          label-for="guarantee"
-          invalid-feedback="Обязательное поле"
-          :state="guaranteeState"
-        >
-          <b-form-input
-            id="guarantee"
-            v-model="newItem.guarantee"
-            :state="guaranteeState"
-            type="number"
-            required
-          ></b-form-input>
-        </b-form-group>
+        <p>Динамические поля</p>
+        <b-list-group>
+          <b-list-group-item
+            v-for="(prop, idx) in newItem.fields"
+            :key="idx"
+            class="d-flex justify-content-between align-items-center"
+          >
+            <b-row>
+              <b-col cols="5">
+                <b-form-input v-model="prop.key"></b-form-input>
+              </b-col>
+              <b-col cols="5">
+                <b-form-input v-model="prop.val"></b-form-input>
+              </b-col>
+              <b-col cols="2">
+                <b-button
+                  size="sm"
+                  variant="danger"
+                  pill
+                  @click="removeDynamicProp(prop)"
+                >
+                  <b-badge variant="danger">
+                    <b-icon icon="trash"></b-icon> </b-badge
+                ></b-button>
+              </b-col>
+            </b-row>
+          </b-list-group-item>
+        </b-list-group>
+        <b-button size="sm" @click="addPropToNewItem">добавить поле</b-button>
       </form>
     </b-modal>
     <b-modal
@@ -194,113 +117,37 @@
             :options="categoryOptions"
           ></b-form-select>
         </b-form-group>
-        <b-form-group
-          label="Цена"
-          label-for="price-input"
-          invalid-feedback="Обязательное поле"
-          :state="priceState"
+        <p>Динамические поля</p>
+        <b-list-group>
+          <b-list-group-item
+            v-for="(prop, idx) in updatingItem.fields"
+            :key="idx"
+            class="d-flex justify-content-between align-items-center"
+          >
+            <b-row>
+              <b-col cols="5">
+                <b-form-input v-model="prop.key"></b-form-input>
+              </b-col>
+              <b-col cols="5">
+                <b-form-input v-model="prop.val"></b-form-input>
+              </b-col>
+              <b-col cols="2">
+                <b-button
+                  size="sm"
+                  variant="danger"
+                  pill
+                  @click="removeDynamicProp(prop)"
+                >
+                  <b-badge variant="danger">
+                    <b-icon icon="trash"></b-icon> </b-badge
+                ></b-button>
+              </b-col>
+            </b-row>
+          </b-list-group-item>
+        </b-list-group>
+        <b-button size="sm" @click="addPropToUpdatingItem"
+          >добавить поле</b-button
         >
-          <b-form-input
-            id="price-input"
-            type="number"
-            v-model="updatingItem.price"
-            :state="priceState"
-            required
-          ></b-form-input>
-        </b-form-group>
-        <b-form-group
-          label="Покрытие"
-          label-for="covering"
-          invalid-feedback="Обязательное поле"
-          :state="coveringState"
-        >
-          <b-form-input
-            id="covering"
-            v-model="updatingItem.covering"
-            :state="coveringState"
-            required
-          ></b-form-input>
-        </b-form-group>
-
-        <b-form-group
-          label="Толщина"
-          label-for="depth"
-          invalid-feedback="Обязательное поле"
-          :state="depthState"
-        >
-          <b-form-input
-            id="depth"
-            v-model="updatingItem.depth"
-            :state="depthState"
-            required
-          ></b-form-input>
-        </b-form-group>
-        <b-form-group
-          label="Ширина"
-          label-for="width"
-          invalid-feedback="Обязательное поле"
-          :state="widthState"
-        >
-          <b-form-input
-            id="width"
-            v-model="updatingItem.width"
-            :state="widthState"
-            required
-          ></b-form-input>
-        </b-form-group>
-        <b-form-group
-          label="Длина"
-          label-for="height"
-          invalid-feedback="Обязательное поле"
-          :state="heightState"
-        >
-          <b-form-input
-            id="height"
-            v-model="updatingItem.height"
-            :state="heightState"
-            required
-          ></b-form-input>
-        </b-form-group>
-        <b-form-group
-          label="Ширина волны"
-          label-for="wave_width"
-          invalid-feedback="Обязательное поле"
-          :state="wave_widthState"
-        >
-          <b-form-input
-            id="wave_width"
-            v-model="updatingItem.wave_width"
-            :state="wave_widthState"
-            required
-          ></b-form-input>
-        </b-form-group>
-
-        <b-form-group
-          label="Высота волны"
-          label-for="wave_height"
-          invalid-feedback="Обязательное поле"
-          :state="wave_heightState"
-        >
-          <b-form-input
-            id="wave_height"
-            v-model="updatingItem.wave_height"
-            :state="wave_heightState"
-            required
-          ></b-form-input>
-        </b-form-group>
-        <b-form-group
-          label="Гарантие"
-          label-for="guarantee"
-          invalid-feedback="Обязательное поле"
-          :state="guaranteeState"
-        >
-          <b-form-input
-            id="guarantee"
-            v-model="updatingItem.guarantee"
-            :state="guaranteeState"
-            required
-          ></b-form-input>
-        </b-form-group>
       </form>
     </b-modal>
   </div>
@@ -308,92 +155,18 @@
 
 <script>
 import { treeToArray } from "../helpers/tree-helper";
-/**
-  
-        'name',
-        'category_id',
-        'price',
-        'covering',
-        'depth',
-        'width',
-        'height',
-        'wave_width',
-        'wave_height',
-        'guarantee'
-     
-  */
+
 export default {
   data() {
     return {
       nameState: null,
       catState: null,
-      priceState: null,
-      coveringState: null,
-      depthState: null,
-      widthState: null,
-      heightState: null,
-      wave_widthState: null,
-      wave_heightState: null,
-      guaranteeState: null,
       updatingItem: {},
       showUpdateModal: false,
-      newItem: {},
-      fields: [
-        {
-          key: "name",
-          label: "Название",
-          sortable: true,
-        },
-        {
-          key: "category_id",
-          label: "Категория",
-          sortable: true,
-        },
-        {
-          key: "price",
-          label: "Цена",
-          sortable: true,
-        },
-        {
-          key: "covering",
-          label: "Покрытие",
-          sortable: true,
-        },
-        {
-          key: "depth",
-          label: "Толщина",
-          sortable: true,
-        },
-        {
-          key: "width",
-          label: "Ширина",
-          sortable: true,
-        },
-        {
-          key: "height",
-          label: "Длина",
-          sortable: true,
-        },
-        {
-          key: "wave_width",
-          label: "Ширина волны",
-          sortable: true,
-        },
-        {
-          key: "wave_height",
-          label: "Высота волны",
-          sortable: true,
-        },
-        {
-          key: "guarantee",
-          label: "Гарантие",
-        },
-        {
-          key: "actions",
-          label: "",
-        },
-      ],
+      newItem: { fields: [] },
+
       items: [],
+      dynamicKeys: [],
     };
   },
   mounted() {
@@ -401,36 +174,46 @@ export default {
     const self = this;
     this.$store.dispatch("categories/all");
     this.$axios.$get("/products").then((res) => {
+      // let keys = new Set();
+      // if (res) {
+      //   res.forEach((element) => {
+      //     element.fields.forEach((x) => keys.add(x.key));
+      //   });
+      //   this.dynamicKeys = [...keys].sort();
+      // }
       self.items = res;
     });
   },
   methods: {
+    addPropToNewItem() {
+      this.newItem.fields.push({ key: "", val: "" });
+    },
+
+    removeDynamicProp(prop) {
+      let idx = this.newItem.fields.indexOf(prop);
+      if (idx >= 0) this.newItem.fields.splice(idx, 1);
+
+      idx = this.updatingItem.fields.indexOf(prop);
+      if (idx >= 0) this.updatingItem.fields.splice(idx, 1);
+    },
+
+    addPropToUpdatingItem() {
+      this.updatingItem.fields.push({ key: "", val: "" });
+    },
+
     checkFormValidity() {
       const valid = this.$refs.form.checkValidity();
       this.nameState = valid;
       this.catState = valid;
-      this.priceState = valid;
-      this.coveringState = valid;
-      this.depthState = valid;
-      this.widthState = valid;
-      this.heightState = valid;
-      this.wave_widthState = valid;
-      this.wave_heightState = valid;
-      this.guaranteeState = valid;
       return valid;
     },
     resetModal() {
-      this.newItem = {};
+      this.newItem = {
+        fields: [],
+      };
+      this.updatingItem.fields = this.updatingItem.fields || [];
       this.nameState = null;
       this.catState = null;
-      this.priceState = null;
-      this.coveringState = null;
-      this.depthState = null;
-      this.widthState = null;
-      this.heightState = null;
-      this.wave_widthState = null;
-      this.wave_heightState = null;
-      this.guaranteeState = null;
     },
     handleOk(bvModalEvt) {
       // Prevent modal from closing
@@ -495,6 +278,26 @@ export default {
             return { value: c.id, text: c.name };
           })
         : [];
+    },
+    fields() {
+      return [
+        {
+          key: "name",
+          label: "Название",
+          sortable: true,
+        },
+        {
+          key: "category_id",
+          label: "Категория",
+          sortable: true,
+        },
+        { key: "fields", label: "динамические поля" },
+        ...this.dynamicKeys,
+        {
+          key: "actions",
+          label: "",
+        },
+      ];
     },
   },
 };
