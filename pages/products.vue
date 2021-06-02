@@ -148,6 +148,35 @@
         <b-button size="sm" @click="addPropToUpdatingItem"
           >добавить поле</b-button
         >
+        <p>Фото</p>
+        <b-list-group>
+          <b-list-group-item
+            v-for="(prop, idx) in updatingItem.photos"
+            :key="idx"
+            class="d-flex justify-content-between align-items-center"
+          >
+            <b-row>
+              <b-col cols="10">
+                <b>{{ prop.name }}</b>
+              </b-col>
+              <b-col cols="2">
+                <b-button
+                  size="sm"
+                  variant="danger"
+                  pill
+                  @click="removePhoto(prop)"
+                >
+                  <b-badge variant="danger">
+                    <b-icon icon="trash"></b-icon> </b-badge
+                ></b-button>
+              </b-col>
+            </b-row>
+          </b-list-group-item>
+        </b-list-group>
+        <input type="file" ref="inputFile" hidden @change="addPhoto" />
+        <b-button size="sm" @click="addPhotoToUpdatingItem"
+          >добавить фото</b-button
+        >
       </form>
     </b-modal>
   </div>
@@ -185,6 +214,34 @@ export default {
     });
   },
   methods: {
+    removePhoto(f) {
+      console.log(f);
+      let idx = this.updatingItem.photos.indexOf(f);
+      this.updatingItem.photos.splice(idx, 1);
+      this.$forceUpdate();
+    },
+    addPhoto() {
+      const file = this.$refs.inputFile.files[0];
+      let formData = new FormData();
+      formData.append("f", file);
+      this.$axios
+        .$post(`products/${this.updatingItem.id}/addPhoto`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then(function () {
+          console.log("SUCCESS!!");
+        });
+      this.updatingItem.photos.push(file);
+
+      this.$refs.inputFile.value = "";
+      this.$forceUpdate();
+    },
+    addPhotoToUpdatingItem() {
+      this.$refs.inputFile.click();
+    },
+
     addPropToNewItem() {
       this.newItem.fields.push({ key: "", val: "" });
     },
@@ -210,8 +267,11 @@ export default {
     resetModal() {
       this.newItem = {
         fields: [],
+        photos: [],
       };
       this.updatingItem.fields = this.updatingItem.fields || [];
+      this.updatingItem.photos = this.updatingItem.photos || [];
+
       this.nameState = null;
       this.catState = null;
     },
